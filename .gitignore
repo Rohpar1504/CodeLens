@@ -2,3 +2,4 @@
 *.pem
 __pycache__/
 .venv/
+chroma_data/
