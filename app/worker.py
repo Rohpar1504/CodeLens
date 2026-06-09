@@ -1,9 +1,10 @@
 import asyncio
-import json
 import httpx
 from app.webhooks.queue import dequeue_review_job
 from app.webhooks.auth import get_installation_token
 from app.webhooks.diff_parser import parse_pull_request_files
+from app.rag.indexer import index_repository
+from app.rag.retriever import retrieve_context
 
 
 async def process_job(job: dict):
@@ -17,7 +18,11 @@ async def process_job(job: dict):
         "Accept": "application/vnd.github+json",
     }
 
-    # Fetch the list of changed files + patches
+    # Step 1 — Index the repo (skip if already indexed)
+    print(f"[worker] Indexing {job['repo_full_name']}...")
+    await index_repository(job["repo_full_name"], token)
+
+    # Step 2 — Fetch the PR diff
     url = (
         f"https://api.github.com/repos/{job['repo_full_name']}"
         f"/pulls/{job['pull_number']}/files"
@@ -27,14 +32,23 @@ async def process_job(job: dict):
         response.raise_for_status()
         pr_files = response.json()
 
-    # Parse the diff
+    # Step 3 — Parse the diff into hunks
     hunks = parse_pull_request_files(pr_files)
     print(f"[worker] Found {len(hunks)} diff hunks across {len(pr_files)} files")
-    for hunk in hunks:
-        print(f"  {hunk.filename} @ line {hunk.start_line}: "
-              f"+{len(hunk.added_lines)} -{len(hunk.removed_lines)} lines")
 
-    # Phase 3 will add: RAG retrieval → LLM review → post comments
+    # Step 4 — Retrieve relevant context for each hunk
+    for hunk in hunks:
+        diff_text = "\n".join(hunk.added_lines)
+        if not diff_text.strip():
+            continue
+
+        context = await retrieve_context(job["repo_full_name"], diff_text, k=3)
+        print(f"[worker] Hunk in {hunk.filename} — retrieved {len(context)} context chunks")
+        for c in context:
+            print(f"  → {c['metadata']['filepath']}:{c['metadata']['start_line']} "
+                  f"({c['metadata']['name']}) distance={c['distance']:.3f}")
+
+    # Phase 4 will add: LLM review → post comments
 
 
 async def run_worker():
@@ -42,11 +56,12 @@ async def run_worker():
     while True:
         job = await dequeue_review_job()
         if job is None:
-            continue  # timeout, loop again
+            continue
         try:
             await process_job(job)
         except Exception as e:
             print(f"[worker] Error processing job: {e}")
+            raise
 
 
 if __name__ == "__main__":
