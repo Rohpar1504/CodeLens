@@ -29,7 +29,7 @@ GitHub webhook → diff parser → Redis queue → RAG retrieval
 
 - [x] Phase 1 — Environment, FastAPI scaffold, project structure
 - [x] Phase 2 — GitHub App, webhook pipeline, diff parser, Redis queue
-- [ ] Phase 3 — RAG pipeline (codebase indexing + retrieval)
+- [x] Phase 3 — RAG pipeline (codebase indexing + retrieval)
 - [ ] Phase 4 — LLM review engine + inline PR comments
 - [ ] Phase 5 — Auth, multi-tenancy, per-org isolation
 - [ ] Phase 6 — Docker, deployment, observability
