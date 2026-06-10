@@ -1,0 +1,7 @@
+.venv
+.env
+*.pem
+__pycache__
+.git
+chroma_data
+codelens.db

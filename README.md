@@ -32,7 +32,7 @@ GitHub webhook → diff parser → Redis queue → RAG retrieval
 - [x] Phase 3 — RAG pipeline (codebase indexing + retrieval)
 - [x] Phase 4 — LLM review engine + inline PR comments
 - [x] Phase 5 — Auth, multi-tenancy, per-org isolation
-- [ ] Phase 6 — Docker, deployment, observability
+- [x] Phase 6 — Docker, deployment, observability
 
 ## Setup
 
@@ -58,3 +58,7 @@ uvicorn app.main:app --reload
 ## Environment Variables
 
 See `.env.example` for all required variables.
+
+## Live Demo
+
+Deployed at: https://observant-analysis-production-e55d.up.railway.app

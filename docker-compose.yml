@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./chroma_data:/app/chroma_data
+      - ./codelens.db:/app/codelens.db
+      - ./private-key.pem:/app/private-key.pem
+
+  worker:
+    build: .
+    command: python -m app.worker
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./chroma_data:/app/chroma_data
+      - ./codelens.db:/app/codelens.db
+      - ./private-key.pem:/app/private-key.pem
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
