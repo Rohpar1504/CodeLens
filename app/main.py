@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="CodeLens",
+    title="DevLens",
     description="AI-powered code review platform",
     version="0.1.0",
     lifespan=lifespan,
@@ -23,4 +23,4 @@ app.include_router(webhooks_router, prefix="/github", tags=["github"])
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "codelens"}
+    return {"status": "ok", "service": "devlens"}

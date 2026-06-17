@@ -1,4 +1,4 @@
-# CodeLens - AI-Powered Code Review Platform
+# DevLens - AI-Powered Code Review Platform
 
 A GitHub-integrated tool that automatically reviews pull requests,
 explains diffs, and learns from your team's review style over time.
@@ -46,7 +46,7 @@ GitHub webhook → diff parser → Redis queue → RAG retrieval
 ### Installation
 
 ```bash
-git clone https://github.com/Rohpar1504/CodeLens.git
+git clone https://github.com/Rohpar1504/DevLens.git
 cd CodeLens
 python -m venv .venv
 source .venv/bin/activate
