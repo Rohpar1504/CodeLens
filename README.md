@@ -47,7 +47,7 @@ GitHub webhook → diff parser → Redis queue → RAG retrieval
 
 ```bash
 git clone https://github.com/Rohpar1504/DevLens.git
-cd CodeLens
+cd DevLens
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
